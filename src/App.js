@@ -11,6 +11,7 @@ import UserProfile from './components/UserProfile';
 function App() {
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState('Click here to talk to me');
+  const [textInput, setTextInput] = useState('');
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [authModalOpen, setAuthModalOpen] = useState(false);
@@ -101,6 +102,19 @@ function App() {
   const startListening = () => {
     setListening(true);
     recognitionRef.current.start();
+  };
+
+  const handleTextSubmit = (e) => {
+    e.preventDefault();
+    if (textInput.trim()) {
+      setTranscript(textInput);
+      takeCommand(textInput.toLowerCase());
+      setTextInput('');
+    }
+  };
+
+  const handleTextInputChange = (e) => {
+    setTextInput(e.target.value);
   };
 
   const takeCommand = (message) => {
@@ -302,6 +316,7 @@ function App() {
       <img src={logo} alt="logo" className="logo" />
       <h1>I'm <span className="name">Shifra</span>, Your <span className="va">Virtual Assistant</span></h1>
       
+      {/* Voice Input */}
       {listening ? (
         <img src={voiceGif} alt="voice" className="voice" />
       ) : (
@@ -310,6 +325,28 @@ function App() {
           <span className="content">{transcript}</span>
         </button>
       )}
+      
+      {/* Text Input */}
+      <div className="input-container">
+        <form onSubmit={handleTextSubmit} className="text-input-form">
+          <input
+            type="text"
+            value={textInput}
+            onChange={handleTextInputChange}
+            placeholder="Type your command here..."
+            className="text-input"
+            disabled={listening}
+          />
+          <button 
+            type="submit" 
+            className="submit-btn"
+            disabled={!textInput.trim() || listening}
+          >
+            Send
+          </button>
+        </form>
+        <p className="input-help">💡 Try: "play kesariya", "open youtube", "what time is it"</p>
+      </div>
     </div>
   );
 }
